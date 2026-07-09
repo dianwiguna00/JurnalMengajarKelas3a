@@ -14,6 +14,21 @@ body{
     margin:20px;
 }
 
+.toolbar{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-bottom:20px;
+}
+
+.toolbar select,
+.toolbar input,
+.toolbar button{
+    height:45px;
+    padding:0 12px;
+    font-size:16px;
+}
+
 h1{
     text-align:center;
     margin-bottom:10px;
@@ -68,6 +83,16 @@ th{
     word-break:break-word;
 }
 
+.ttd{
+    margin-top:20px;
+    width:100%;
+}
+
+.ttd td{
+    border:none !important;
+    font-size:12px;
+}
+
 @page{
     size:A4 portrait;
     margin:10mm;
@@ -99,17 +124,22 @@ th{
 
 }
 
-    
 </style>
 
 </head>
 
 <body>
+<div class="toolbar">
 
+    <button onclick="cetakPDF()">
+        Cetak PDF
+    </button>
+
+</div>
 <div id="output">
 Memuat data...
 </div>
-    
+
 <script>
 
 const API =
@@ -600,6 +630,37 @@ function renderData(
 
         html += `
         </table>
+
+       <table class="ttd">
+
+            <tr>
+                <td style="width:60%"></td>
+                <td style="text-align:center">
+                    Pemalang, ...............
+                </td>
+            </tr>
+
+            <tr>
+                <td></td>
+                <td style="text-align:center">
+                    Guru Mata Pelajaran
+                </td>
+            </tr>
+
+            <tr>
+                <td style="height:80px"></td>
+                <td></td>
+            </tr>
+
+            <tr>
+                <td></td>
+                <td style="text-align:center">
+                    ______________________
+                </td>
+            </tr>
+
+        </table>
+
         `;
 
     });
@@ -614,10 +675,20 @@ function renderData(
 
 loadData();
 
+function cetakPDF(){
 
+    if(window.Android){
 
+        Android.cetakPDF();
 
-    
+    }else{
+
+        window.print();
+
+    }
+
+}
+
 </script>
 </body>
 </html>
