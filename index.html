@@ -355,51 +355,39 @@ async function downloadExcelKelas(){
         const data =
         await res.json();
 
-        const csv =
-        data.map(
-            r => r.join(";")
-        ).join("\n");
+const csv =
+data.map(
+    r => r.join(";")
+).join("\n");
 
-        const blob =
-        new Blob(
-            [csv],
-            {
-                type:
-                "text/csv;charset=utf-8;"
-            }
-        );
+if(window.Android){
 
-        const url =
-        URL.createObjectURL(
-            blob
-        );
+    Android.downloadCSV(csv);
 
-        const a =
-        document.createElement(
-            "a"
-        );
+}else{
 
-        a.href =
-        url;
+    const blob =
+    new Blob(
+        [csv],
+        {
+            type:"text/csv;charset=utf-8;"
+        }
+    );
 
-        a.download =
-        "Rekap_" +
-        kelas +
-        ".csv";
+    const url =
+    URL.createObjectURL(blob);
 
-        a.click();
+    const a =
+    document.createElement("a");
 
-        URL.revokeObjectURL(
-            url
-        );
+    a.href = url;
 
-    }catch(err){
+    a.download =
+    "Rekap_" +
+    kelas +
+    ".csv";
 
-        alert(
-            "Gagal mengunduh Excel"
-        );
-
-    }
+    a.click();
 
 }
 
