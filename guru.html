@@ -14,6 +14,21 @@ body{
     margin:20px;
 }
 
+.toolbar{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-bottom:20px;
+}
+
+.toolbar select,
+.toolbar input,
+.toolbar button{
+    height:45px;
+    padding:0 12px;
+    font-size:16px;
+}
+
 h2{
     text-align:center;
     margin-bottom:5px;
@@ -67,22 +82,59 @@ th{
     border:none;
 }
 
+/* Cetak */
+
+@page{
+    size:A4 portrait;
+    margin:10mm;
+}
+
 @media print{
 
-    @page{
-        size:A4 portrait;
-        margin:10mm;
+    body{
+        margin:0;
+        background:white;
+    }
+
+    .toolbar{
+        display:none;
+    }
+
+    .sheet{
+        padding:0;
+    }
+
+    table{
+        width:100%;
+    }
+
+    th{
+        background:#d9d9d9 !important;
+        -webkit-print-color-adjust:exact;
+        print-color-adjust:exact;
+    }
+
+    .hari-row td{
+        background:#e6e6e6 !important;
+        -webkit-print-color-adjust:exact;
+        print-color-adjust:exact;
     }
 
 }
 
-    
 </style>
 
 </head>
 
 <body>
 
+<div class="toolbar">
+
+    <button onclick="cetakPDF()">
+        Cetak PDF
+    </button>
+
+</div>
 <div id="output">
 Loading...
 </div>
@@ -580,6 +632,19 @@ function renderGuru(
 
 loadData();
 
+function cetakPDF(){
+
+    if(window.Android){
+
+        Android.cetakPDF();
+
+    }else{
+
+        window.print();
+
+    }
+
+}
 
 </script>
 
