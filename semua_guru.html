@@ -109,6 +109,10 @@ th{
 Memuat data...
 </div>
 
+<button onclick="cetakPDF()">
+📄 Cetak PDF
+</button>
+    
 <script>
 
 const API =
@@ -613,6 +617,24 @@ function renderData(
 
 loadData();
 
+
+
+function cetakPDF(){
+
+    if(window.Android){
+
+        Android.cetakPDF();
+
+    }else{
+
+        window.print();
+
+    }
+
+}
+
+
+    
 </script>
 </body>
 </html>
