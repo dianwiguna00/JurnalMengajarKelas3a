@@ -331,7 +331,7 @@ th{
 <script>
 
 const API =
-"https://script.google.com/macros/s/AKfycbz1ghySYmF_bP0GzkT1H2aMmPFNygG3uihm7lHC4c0DnLUhU_Zl-kln_Y70pPcklWYxLQ/exec";
+"https://script.google.com/macros/s/AKfycbyxRyz4qHsFOpMxWHf9K1cP_ESxvO20RlCJiB2onRRl10WgmZRzl-etZrpfH6twilPH/exec";
 
 const NAMA_HARI = [
     "Minggu",
@@ -343,10 +343,49 @@ const NAMA_HARI = [
     "Sabtu"
 ];
 
+// =========================
+// PARSE TANGGAL
+// =========================
+
+function parseTanggal(str){
+
+    if(!str) return null;
+
+    const p =
+    String(str).split("-");
+
+    // yyyy-MM-dd
+    if(p[0].length === 4){
+
+        return new Date(
+            Number(p[0]),
+            Number(p[1]) - 1,
+            Number(p[2])
+        );
+
+    }
+
+    // dd-MM-yyyy
+    return new Date(
+        Number(p[2]),
+        Number(p[1]) - 1,
+        Number(p[0])
+    );
+
+}
+
+// =========================
+// SET TANGGAL HARI INI
+// =========================
+
 window.onload = function(){
 
-    document.getElementById("tanggal").value =
-    new Date().toISOString().split("T")[0];
+    document.getElementById(
+        "tanggal"
+    ).value =
+    new Date()
+    .toISOString()
+    .split("T")[0];
 
 };
 
@@ -356,7 +395,10 @@ window.onload = function(){
 
 function formatTanggal(tanggal){
 
-    let d = new Date(tanggal);
+    let d =
+    tanggal instanceof Date
+    ? tanggal
+    : parseTanggal(tanggal);
 
     let dd =
     String(d.getDate())
@@ -379,14 +421,17 @@ function formatTanggal(tanggal){
 
 function namaHari(tanggal){
 
+    let d =
+    parseTanggal(tanggal);
+
     return NAMA_HARI[
-        new Date(tanggal).getDay()
+        d.getDay()
     ];
 
 }
 
 // =========================
-// SENIN - SABTU
+// PERIODE SENIN-SABTU
 // =========================
 
 function getPeriodeMinggu(tanggal){
@@ -406,7 +451,9 @@ function getPeriodeMinggu(tanggal){
     let senin =
     new Date(d);
 
-    senin.setHours(0,0,0,0);
+    senin.setHours(
+        0,0,0,0
+    );
 
     senin.setDate(
         d.getDate() - hari + 1
@@ -424,8 +471,10 @@ function getPeriodeMinggu(tanggal){
     );
 
     return {
-        senin:senin,
-        sabtu:sabtu
+
+        senin : senin,
+        sabtu : sabtu
+
     };
 
 }
@@ -453,6 +502,7 @@ async function buatRekap(){
         );
 
         return;
+
     }
 
     try{
@@ -461,10 +511,12 @@ async function buatRekap(){
         await fetch(
             API +
             "?rekap=" +
-            kelas
+            encodeURIComponent(
+                kelas
+            )
         );
 
-        let data =
+        const data =
         await response.json();
 
         if(
@@ -493,48 +545,77 @@ async function buatRekap(){
         const akhir =
         periode.sabtu;
 
-        let hasil =
+        const hasil =
         data.filter(r=>{
 
-            let t =
-            new Date(r[1]);
+            const t =
+            parseTanggal(
+                r[1]
+            );
 
             return (
+                t &&
                 t >= awal &&
                 t <= akhir
             );
 
         });
 
-if(hasil.length === 0){
+        if(
+            hasil.length === 0
+        ){
 
-    document.getElementById(
-        "output"
-    ).innerHTML = `
-        <div class="sheet">
-            <h2>
-                Tidak ada jurnal pada periode ini
-            </h2>
-        </div>
-    `;
+            document
+            .getElementById(
+                "output"
+            ).innerHTML = `
+                <div class="sheet">
+                    <h2>
+                        Tidak ada jurnal pada periode ini
+                    </h2>
+                </div>
+            `;
 
-    return;
-}
+            return;
 
-hasil.sort((a,b)=>{
+        }
 
-    let t1 = new Date(a[1]);
-    let t2 = new Date(b[1]);
+        hasil.sort((a,b)=>{
 
-    if(t1.getTime() !== t2.getTime()){
+            const t1 =
+            parseTanggal(
+                a[1]
+            );
 
-        return t1 - t2;
+            const t2 =
+            parseTanggal(
+                b[1]
+            );
 
-    }
+            if(
+                t1.getTime() !==
+                t2.getTime()
+            ){
 
-    return parseInt(a[2]) - parseInt(b[2]);
+                return t1 - t2;
 
-});
+            }
+
+            const jam1 =
+            Number(
+                String(a[2])
+                .split("-")[0]
+            );
+
+            const jam2 =
+            Number(
+                String(b[2])
+                .split("-")[0]
+            );
+
+            return jam1 - jam2;
+
+        });
 
         renderRekap(
             hasil,
@@ -545,8 +626,13 @@ hasil.sort((a,b)=>{
 
     }catch(err){
 
+        console.error(
+            err
+        );
+
         alert(
-            "Gagal mengambil data jurnal"
+            "Gagal mengambil data jurnal : " +
+            err.message
         );
 
     }
@@ -603,37 +689,38 @@ function renderRekap(
 
     `;
 
-let hariSebelumnya = "";
-let nomorHari = 0;
+    let hariSebelumnya =
+    "";
 
-data.forEach((r)=>{
+    let nomorHari = 0;
 
-    let hariSekarang =
-    namaHari(r[1]);
+    data.forEach(r=>{
 
-    if(
-        hariSekarang !==
-        hariSebelumnya
-    ){
+        const hariSekarang =
+        namaHari(r[1]);
 
-        nomorHari = 0;
+        if(
+            hariSekarang !==
+            hariSebelumnya
+        ){
 
-        html += `
-        <tr class="hari-row">
-            <td colspan="9">
-                ${hariSekarang.toUpperCase()}
-            </td>
-        </tr>
-        `;
-    }
+            nomorHari = 0;
 
+            html += `
+            <tr class="hari-row">
+                <td colspan="9">
+                    ${hariSekarang.toUpperCase()}
+                </td>
+            </tr>
+            `;
+        }
 
         html += `
         <tr>
 
             <td class="center">
-    ${++nomorHari}
-</td>
+                ${++nomorHari}
+            </td>
 
             <td>
                 ${r[1]}
