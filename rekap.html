@@ -152,14 +152,11 @@ th{
 
 }
 
-    
 </style>
 
 </head>
 <body>
 
-<div id="output">
-</div>
 <div class="toolbar">
 
     <select id="kelas">
@@ -179,9 +176,11 @@ th{
     <button onclick="buatRekap()">
         Tampilkan Rekap
     </button>
-        <button onclick="window.print()">
+
+    <button onclick="cetakPDF()">
         Cetak PDF
     </button>
+
 </div>
 
 <div id="output">
@@ -300,7 +299,7 @@ th{
             <tr>
                 <td style="width:60%"></td>
                 <td style="text-align:center">
-                    Gentuma Raya, ...............
+                    Pemalang, ...............
                 </td>
             </tr>
 
@@ -329,7 +328,6 @@ th{
 
 </div>
 
-    
 <script>
 
 const API =
@@ -830,8 +828,19 @@ function renderRekap(
 
 }
 
+function cetakPDF(){
 
+    if(window.Android){
 
+        Android.cetakPDF();
+
+    }else{
+
+        window.print();
+
+    }
+
+}
 
 </script>
     
