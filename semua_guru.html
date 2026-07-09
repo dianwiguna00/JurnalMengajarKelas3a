@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>Rekap Semua Guru</title>
+
+<style>
+
+body{
+    font-family:Arial,sans-serif;
+    margin:20px;
+}
+
+h1{
+    text-align:center;
+    margin-bottom:10px;
+}
+
+.info{
+    margin-bottom:20px;
+}
+
+.guru-title{
+    margin-top:30px;
+    background:#d9d9d9;
+    padding:8px;
+    font-weight:bold;
+    font-size:16px;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:5px;
+}
+
+th,
+td{
+    border:1px solid #000;
+    padding:4px 6px;
+    font-size:11px;
+    vertical-align:top;
+}
+
+th{
+    background:#e6e6e6;
+}
+
+.hari-row td{
+    background:#f2f2f2;
+    font-weight:bold;
+    padding-left:10px;
+}
+
+.col-materi{
+    min-width:220px;
+    white-space:normal;
+    word-break:break-word;
+}
+
+.col-sakit,
+.col-izin,
+.col-alfa{
+    white-space:normal;
+    word-break:break-word;
+}
+
+@page{
+    size:A4 portrait;
+    margin:10mm;
+}
+
+@media print{
+
+    body{
+        margin:0;
+    }
+
+    .guru-title{
+        background:#d9d9d9 !important;
+        -webkit-print-color-adjust:exact;
+        print-color-adjust:exact;
+    }
+
+    .hari-row td{
+        background:#f2f2f2 !important;
+        -webkit-print-color-adjust:exact;
+        print-color-adjust:exact;
+    }
+
+    th{
+        background:#e6e6e6 !important;
+        -webkit-print-color-adjust:exact;
+        print-color-adjust:exact;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div id="output">
+Memuat data...
+</div>
+
+<script>
+
+const API =
+"https://script.google.com/macros/s/AKfycbxsu6ICQNfyDeDrhpPb0K7GdhyB8ZWBhyhlEZVAaux05nrLxHwibX6nm7nhIOVyoJEe/exec";
+
+const KELAS = [
+    "7A","7B","7C",
+    "7D","7E","7F",
+    "7G","7H","7I"
+];
+
+const HARI = [
+    "Minggu",
+    "Senin",
+    "Selasa",
+    "Rabu",
+    "Kamis",
+    "Jumat",
+    "Sabtu"
+];
+
+function getParam(nama){
+
+    return new URLSearchParams(
+        location.search
+    ).get(nama);
+
+}
+
+function formatTanggal(tanggal){
+
+    let d =
+    new Date(tanggal);
+
+    let dd =
+    String(d.getDate())
+    .padStart(2,"0");
+
+    let mm =
+    String(d.getMonth()+1)
+    .padStart(2,"0");
+
+    let yyyy =
+    d.getFullYear();
+
+    return dd+"-"+mm+"-"+yyyy;
+
+}
+
+function namaHari(tanggal){
+
+    return HARI[
+        new Date(tanggal).getDay()
+    ];
+
+}
+
+function getPeriodeMinggu(tanggal){
+
+    let d =
+    new Date(tanggal);
+
+    let hari =
+    d.getDay();
+
+    if(hari===0){
+
+        hari=7;
+
+    }
+
+    let senin =
+    new Date(d);
+
+    senin.setDate(
+        d.getDate()-hari+1
+    );
+
+    senin.setHours(
+        0,0,0,0
+    );
+
+    let sabtu =
+    new Date(senin);
+
+    sabtu.setDate(
+        senin.getDate()+5
+    );
+
+    sabtu.setHours(
+        23,59,59,999
+    );
+
+    return {
+        senin,
+        sabtu
+    };
+
+}
+
+async function loadData(){
+
+    const tanggal =
+    getParam("tanggal");
+
+    const periode =
+    getPeriodeMinggu(
+        tanggal
+    );
+
+    let semua = [];
+
+    for(const kelas of KELAS){
+
+        try{
+
+            const res =
+            await fetch(
+                API +
+                "?rekap=" +
+                kelas
+            );
+
+            let data =
+            await res.json();
+
+            data.shift();
+
+            semua =
+            semua.concat(
+                data
+            );
+
+        }catch(err){}
+
+    }
+
+    semua = semua.filter(r=>{
+
+        let t =
+        new Date(r[1]);
+
+        return (
+            t >= periode.senin &&
+            t <= periode.sabtu
+        );
+
+    });
+
+    renderData(
+        semua,
+        periode.senin,
+        periode.sabtu
+    );
+
+}
+
+function renderData(
+    data,
+    awal,
+    akhir
+){
+
+    if(data.length===0){
+
+        document
+        .getElementById(
+            "output"
+        ).innerHTML =
+        "<h2>Tidak ada data</h2>";
+
+        return;
+
+    }
+
+    const guruList =
+    [...new Set(
+        data.map(r=>r[5])
+    )].sort();
+
+    let html = `
+
+    <h1>
+    REKAP JURNAL MENGAJAR SEMUA GURU
+    </h1>
+
+    <div class="info">
+
+    <b>Periode :</b>
+    ${formatTanggal(awal)}
+    s.d.
+    ${formatTanggal(akhir)}
+
+    </div>
+
+    `;
+
+    guruList.forEach(guru=>{
+
+        const dataGuru =
+        data.filter(
+            r=>r[5]===guru
+        );
+
+        html += `
+        <div class="guru-title">
+            ${guru}
+        </div>
+
+        <table>
+
+        <tr>
+
+            <th>No</th>
+            <th>Tanggal</th>
+            <th>Kelas</th>
+            <th>Jam</th>
+            <th>Mapel</th>
+            <th>Materi</th>
+            <th>Sakit</th>
+            <th>Izin</th>
+            <th>Alfa</th>
+
+        </tr>
+        `;
+
+        let hariLama = "";
+        let no = 0;
+
+        dataGuru.forEach(r=>{
+
+            let hari =
+            namaHari(r[1]);
+
+            if(hari!==hariLama){
+
+                no = 0;
+
+                html += `
+                <tr class="hari-row">
+                    <td colspan="9">
+                    ${hari.toUpperCase()}
+                    </td>
+                </tr>
+                `;
+            }
+
+            html += `
+            <tr>
+
+            <td>
+            ${++no}
+            </td>
+
+            <td>
+            ${r[1]}
+            </td>
+
+            <td>
+            ${r[3]}
+            </td>
+
+            <td>
+            ${r[2]}
+            </td>
+
+            <td>
+            ${r[4]}
+            </td>
+
+            <td class="col-materi">
+            ${r[6] || ""}
+            </td>
+
+            <td class="col-sakit">
+            ${r[7] || ""}
+            </td>
+
+            <td class="col-izin">
+            ${r[8] || ""}
+            </td>
+
+            <td class="col-alfa">
+            ${r[9] || ""}
+            </td>
+
+            </tr>
+            `;
+
+            hariLama = hari;
+
+        });
+
+        html += `
+        </table>
+        `;
+
+    });
+
+    document
+    .getElementById(
+        "output"
+    ).innerHTML =
+    html;
+
+}
+
+loadData();
+
+</script>
+
+</body>
+</html>

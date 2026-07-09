@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>Laporan Guru</title>
+
+<style>
+
+body{
+    font-family:Arial,sans-serif;
+    margin:20px;
+}
+
+h2{
+    text-align:center;
+    margin-bottom:5px;
+}
+
+.info{
+    margin:15px 0;
+    line-height:1.6;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th,
+td{
+    border:1px solid #000;
+    padding:4px 6px;
+    font-size:11px;
+    vertical-align:top;
+}
+
+th{
+    background:#d9d9d9;
+}
+
+.hari-row td{
+    background:#e6e6e6;
+    font-weight:bold;
+    text-align:left;
+}
+
+.col-materi,
+.col-sakit,
+.col-izin,
+.col-alfa{
+    white-space:normal;
+    word-break:break-word;
+}
+
+.col-materi{
+    min-width:220px;
+}
+
+.ttd{
+    margin-top:20px;
+}
+
+.ttd td{
+    border:none;
+}
+
+@media print{
+
+    @page{
+        size:A4 portrait;
+        margin:10mm;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div id="output">
+Loading...
+</div>
+
+<script>
+
+const API =
+"https://script.google.com/macros/s/AKfycbz1ghySYmF_bP0GzkT1H2aMmPFNygG3uihm7lHC4c0DnLUhU_Zl-kln_Y70pPcklWYxLQ/exec";
+
+const NAMA_HARI = [
+    "Minggu",
+    "Senin",
+    "Selasa",
+    "Rabu",
+    "Kamis",
+    "Jumat",
+    "Sabtu"
+];
+
+function getParam(nama){
+
+    return new URLSearchParams(
+        location.search
+    ).get(nama);
+
+}
+
+function formatTanggal(tanggal){
+
+    const d =
+    new Date(tanggal);
+
+    const dd =
+    String(d.getDate())
+    .padStart(2,"0");
+
+    const mm =
+    String(d.getMonth()+1)
+    .padStart(2,"0");
+
+    const yyyy =
+    d.getFullYear();
+
+    return dd+"-"+mm+"-"+yyyy;
+
+}
+
+function namaHari(tanggal){
+
+    return NAMA_HARI[
+        new Date(tanggal).getDay()
+    ];
+
+}
+
+function getPeriodeMinggu(tanggal){
+
+    let d =
+    new Date(tanggal);
+
+    let hari =
+    d.getDay();
+
+    if(hari===0){
+
+        hari=7;
+
+    }
+
+    let senin =
+    new Date(d);
+
+    senin.setDate(
+        d.getDate()-hari+1
+    );
+
+    senin.setHours(
+        0,0,0,0
+    );
+
+    let sabtu =
+    new Date(senin);
+
+    sabtu.setDate(
+        senin.getDate()+5
+    );
+
+    sabtu.setHours(
+        23,59,59,999
+    );
+
+    return{
+        senin,
+        sabtu
+    };
+
+}
+
+async function loadData(){
+
+    const guru =
+    getParam("guru");
+
+    const tanggal =
+    getParam("tanggal");
+
+    const periode =
+    getPeriodeMinggu(
+        tanggal
+    );
+
+    const kelasList = [
+
+        "7A","7B","7C",
+        "7D","7E","7F",
+        "7G","7H","7I"
+
+    ];
+
+    let semua = [];
+
+    for(const kelas of kelasList){
+
+        try{
+
+            const res =
+            await fetch(
+                API +
+                "?rekap=" +
+                kelas
+            );
+
+            const data =
+            await res.json();
+
+            data.shift();
+
+            semua =
+            semua.concat(data);
+
+        }catch(err){}
+
+    }
+
+    semua = semua.filter(r=>{
+
+        const t =
+        new Date(r[1]);
+
+        return (
+            r[5] === guru &&
+            t >= periode.senin &&
+            t <= periode.sabtu
+        );
+
+    });
+
+    renderGuru(
+        semua,
+        guru,
+        periode.senin,
+        periode.sabtu
+    );
+
+}
+
+function renderGuru(
+    data,
+    guru,
+    awal,
+    akhir
+){
+
+    if(data.length===0){
+
+        document
+        .getElementById(
+            "output"
+        ).innerHTML=
+        `
+        <h2>
+        Tidak ada data
+        </h2>
+        `;
+
+        return;
+
+    }
+
+    data.sort((a,b)=>{
+
+        return new Date(a[1]) -
+               new Date(b[1]);
+
+    });
+
+    let html = `
+
+    <h2>
+    LAPORAN JURNAL MENGAJAR GURU
+    </h2>
+
+    <div class="info">
+
+    <b>Guru :</b>
+    ${guru}
+    <br>
+
+    <b>Periode :</b>
+    ${formatTanggal(awal)}
+    s.d.
+    ${formatTanggal(akhir)}
+
+    </div>
+
+    <table>
+
+    <tr>
+
+    <th>No</th>
+    <th>Tanggal</th>
+    <th>Kelas</th>
+    <th>Jam</th>
+    <th>Mapel</th>
+    <th>Materi</th>
+    <th>Sakit</th>
+    <th>Izin</th>
+    <th>Alfa</th>
+
+    </tr>
+
+    `;
+
+    let hariLama = "";
+    let no = 0;
+
+    data.forEach(r=>{
+
+        let hari =
+        namaHari(r[1]);
+
+        if(hari!==hariLama){
+
+            no = 0;
+
+            html += `
+            <tr class="hari-row">
+                <td colspan="9">
+                    ${hari.toUpperCase()}
+                </td>
+            </tr>
+            `;
+
+        }
+
+        html += `
+        <tr>
+
+        <td>${++no}</td>
+
+        <td>${r[1]}</td>
+
+        <td>${r[3]}</td>
+
+        <td>${r[2]}</td>
+
+        <td>${r[4]}</td>
+
+        <td class="col-materi">
+        ${r[6] || ""}
+        </td>
+
+        <td class="col-sakit">
+        ${r[7] || ""}
+        </td>
+
+        <td class="col-izin">
+        ${r[8] || ""}
+        </td>
+
+        <td class="col-alfa">
+        ${r[9] || ""}
+        </td>
+
+        </tr>
+        `;
+
+        hariLama = hari;
+
+    });
+
+    html += `
+    </table>
+
+    <table class="ttd">
+
+    <tr>
+
+    <td style="width:60%"></td>
+
+    <td align="center">
+
+    Gentuma Raya,
+    ${formatTanggal(new Date())}
+
+    </td>
+
+    </tr>
+
+    <tr>
+
+    <td></td>
+
+    <td align="center">
+
+    Guru Mata Pelajaran
+
+    </td>
+
+    </tr>
+
+    <tr>
+
+    <td style="height:80px"></td>
+
+    <td></td>
+
+    </tr>
+
+    <tr>
+
+    <td></td>
+
+    <td align="center">
+
+    ${guru}
+
+    </td>
+
+    </tr>
+
+    </table>
+    `;
+
+    document
+    .getElementById(
+        "output"
+    ).innerHTML =
+    html;
+
+}
+
+loadData();
+
+</script>
+
+</body>
+</html>

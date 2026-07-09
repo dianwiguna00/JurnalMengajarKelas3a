@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>Pusat Unduhan Jurnal Mengajar</title>
+
+<style>
+
+body{
+    font-family:Arial,sans-serif;
+    margin:20px;
+    background:#f5f5f5;
+}
+
+h2{
+    text-align:center;
+    margin-bottom:20px;
+}
+
+.card{
+    background:white;
+    padding:15px;
+    border-radius:8px;
+    margin-bottom:15px;
+    box-shadow:0 2px 5px rgba(0,0,0,.1);
+}
+
+label{
+    display:block;
+    margin-top:10px;
+    margin-bottom:5px;
+    font-weight:bold;
+}
+
+select,
+input,
+button{
+    width:100%;
+    height:45px;
+    box-sizing:border-box;
+    margin-bottom:10px;
+}
+
+button{
+    cursor:pointer;
+    font-size:15px;
+}
+
+.menu{
+    display:grid;
+    gap:10px;
+}
+
+</style>
+
+</head>
+<body>
+
+<h2>
+📥 PUSAT UNDUHAN JURNAL MENGAJAR
+</h2>
+
+<div class="card">
+
+    <label>Kelas</label>
+
+    <select id="kelas">
+
+        <option>7A</option>
+        <option>7B</option>
+        <option>7C</option>
+        <option>7D</option>
+        <option>7E</option>
+        <option>7F</option>
+        <option>7G</option>
+        <option>7H</option>
+        <option>7I</option>
+
+    </select>
+
+    <label>Guru</label>
+
+    <select id="guru">
+
+        <option value="">
+            Pilih Guru
+        </option>
+
+    </select>
+
+    <label>Tanggal Acuan</label>
+
+    <input
+        type="date"
+        id="tanggal"
+    >
+
+</div>
+
+<div class="card menu">
+
+    <button onclick="pdfKelas()">
+        📄 PDF Mingguan Per Kelas
+    </button>
+
+    <button onclick="pdfGuru()">
+        📄 PDF Mingguan Per Guru
+    </button>
+
+    <button onclick="pdfSemuaGuru()">
+        📄 PDF Semua Guru
+    </button>
+
+    <button onclick="downloadExcelKelas()">
+        📊 Excel Mingguan Per Kelas
+    </button>
+
+    <button onclick="downloadExcelSemuaGuru()">
+        📊 Excel Semua Guru
+    </button>
+
+    <button onclick="bukaRekap()">
+        👁️ Lihat Rekap Mingguan
+    </button>
+
+</div>
+
+<script>
+
+const API =
+"https://script.google.com/macros/s/AKfycbxsu6ICQNfyDeDrhpPb0K7GdhyB8ZWBhyhlEZVAaux05nrLxHwibX6nm7nhIOVyoJEe/exec";
+
+window.onload = async function(){
+
+    document.getElementById(
+        "tanggal"
+    ).value =
+    new Date()
+    .toISOString()
+    .split("T")[0];
+
+    await loadGuru();
+
+};
+
+// ===========================
+// LOAD GURU
+// ===========================
+
+async function loadGuru(){
+
+    try{
+
+        const res =
+        await fetch(
+            API + "?master=Guru"
+        );
+
+        const data =
+        await res.json();
+
+        const select =
+        document.getElementById(
+            "guru"
+        );
+
+        data.forEach(g=>{
+
+            select.innerHTML += `
+            <option value="${g}">
+                ${g}
+            </option>
+            `;
+
+        });
+
+    }catch(err){
+
+        alert(
+            "Gagal memuat data guru"
+        );
+
+    }
+
+}
+
+// ===========================
+// LIHAT REKAP
+// ===========================
+
+function bukaRekap(){
+
+    const kelas =
+    document.getElementById(
+        "kelas"
+    ).value;
+
+    const tanggal =
+    document.getElementById(
+        "tanggal"
+    ).value;
+
+    window.open(
+
+        "rekap.html" +
+
+        "?kelas=" +
+        encodeURIComponent(
+            kelas
+        ) +
+
+        "&tanggal=" +
+        encodeURIComponent(
+            tanggal
+        ),
+
+        "_blank"
+
+    );
+
+}
+
+// ===========================
+// PDF KELAS
+// ===========================
+
+function pdfKelas(){
+
+    const kelas =
+    document.getElementById(
+        "kelas"
+    ).value;
+
+    const tanggal =
+    document.getElementById(
+        "tanggal"
+    ).value;
+
+    window.open(
+
+        "rekap.html" +
+
+        "?cetak=pdf" +
+
+        "&kelas=" +
+        encodeURIComponent(
+            kelas
+        ) +
+
+        "&tanggal=" +
+        encodeURIComponent(
+            tanggal
+        ),
+
+        "_blank"
+
+    );
+
+}
+
+// ===========================
+// PDF GURU
+// ===========================
+
+function pdfGuru(){
+
+    const guru =
+    document.getElementById(
+        "guru"
+    ).value;
+
+    const tanggal =
+    document.getElementById(
+        "tanggal"
+    ).value;
+
+    if(!guru){
+
+        alert(
+            "Pilih guru terlebih dahulu"
+        );
+
+        return;
+    }
+
+    window.open(
+
+        "guru.html" +
+
+        "?guru=" +
+        encodeURIComponent(
+            guru
+        ) +
+
+        "&tanggal=" +
+        encodeURIComponent(
+            tanggal
+        ),
+
+        "_blank"
+
+    );
+
+}
+
+// ===========================
+// PDF SEMUA GURU
+// ===========================
+
+function pdfSemuaGuru(){
+
+    const tanggal =
+    document.getElementById(
+        "tanggal"
+    ).value;
+
+    window.open(
+
+        "semua-guru.html" +
+
+        "?tanggal=" +
+        encodeURIComponent(
+            tanggal
+        ),
+
+        "_blank"
+
+    );
+
+}
+
+// ===========================
+// EXCEL KELAS
+// ===========================
+
+async function downloadExcelKelas(){
+
+    const kelas =
+    document.getElementById(
+        "kelas"
+    ).value;
+
+    try{
+
+        const res =
+        await fetch(
+            API +
+            "?rekap=" +
+            kelas
+        );
+
+        const data =
+        await res.json();
+
+        const csv =
+        data.map(
+            r => r.join(";")
+        ).join("\n");
+
+        const blob =
+        new Blob(
+            [csv],
+            {
+                type:
+                "text/csv;charset=utf-8;"
+            }
+        );
+
+        const url =
+        URL.createObjectURL(
+            blob
+        );
+
+        const a =
+        document.createElement(
+            "a"
+        );
+
+        a.href =
+        url;
+
+        a.download =
+        "Rekap_" +
+        kelas +
+        ".csv";
+
+        a.click();
+
+        URL.revokeObjectURL(
+            url
+        );
+
+    }catch(err){
+
+        alert(
+            "Gagal mengunduh Excel"
+        );
+
+    }
+
+}
+
+// ===========================
+// EXCEL SEMUA GURU
+// ===========================
+
+async function downloadExcelSemuaGuru(){
+
+    try{
+
+        let semua = [];
+
+        const kelasList = [
+
+            "7A","7B","7C",
+            "7D","7E","7F",
+            "7G","7H","7I"
+
+        ];
+
+        for(const kelas of kelasList){
+
+            const res =
+            await fetch(
+                API +
+                "?rekap=" +
+                kelas
+            );
+
+            const data =
+            await res.json();
+
+            semua =
+            semua.concat(
+                data
+            );
+
+        }
+
+        const csv =
+        semua.map(
+            r => r.join(";")
+        ).join("\n");
+
+        const blob =
+        new Blob(
+            [csv],
+            {
+                type:
+                "text/csv;charset=utf-8;"
+            }
+        );
+
+        const url =
+        URL.createObjectURL(
+            blob
+        );
+
+        const a =
+        document.createElement(
+            "a"
+        );
+
+        a.href =
+        url;
+
+        a.download =
+        "Semua_Guru.csv";
+
+        a.click();
+
+        URL.revokeObjectURL(
+            url
+        );
+
+    }catch(err){
+
+        alert(
+            "Gagal mengunduh Excel"
+        );
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>

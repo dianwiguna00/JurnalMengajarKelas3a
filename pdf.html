@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>Rekap Jurnal Mingguan</title>
+
+<style>
+
+body{
+    font-family:Arial,sans-serif;
+    margin:20px;
+    background:#f5f5f5;
+}
+
+.toolbar{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-bottom:20px;
+}
+
+.toolbar select,
+.toolbar input,
+.toolbar button{
+    height:45px;
+    padding:0 12px;
+    font-size:16px;
+}
+
+.sheet{
+    background:white;
+    padding:15px;
+}
+
+h2{
+    text-align:center;
+    margin:0;
+    font-size:20px;
+}
+
+.info{
+    margin:15px 0;
+    font-size:13px;
+    line-height:1.6;
+}
+
+table{
+    border-collapse:collapse;
+    width:auto;
+    min-width:100%;
+}
+
+th,
+td{
+    border:1px solid #000;
+    padding:4px 6px;
+    font-size:11px;
+    vertical-align:top;
+    white-space:nowrap;
+}
+
+th{
+    background:#d9d9d9;
+    text-align:center;
+    font-weight:bold;
+}
+
+.center{
+    text-align:center;
+}
+
+/* Kolom yang boleh wrap */
+
+.col-materi{
+    white-space:normal;
+    word-break:break-word;
+    min-width:220px;
+    max-width:320px;
+}
+
+.col-sakit,
+.col-izin,
+.col-alfa{
+    white-space:normal;
+    word-break:break-word;
+    min-width:120px;
+    max-width:160px;
+}
+
+/* Judul Hari */
+
+.hari-row td{
+    background:#e6e6e6 !important;
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+    font-weight:bold;
+    text-align:left;
+    padding-left:10px;
+    font-size:12px;
+}
+
+
+.ttd{
+    margin-top:20px;
+    width:100%;
+}
+
+.ttd td{
+    border:none !important;
+    font-size:12px;
+}
+
+/* Cetak */
+
+@page{
+    size:A4 portrait;
+    margin:10mm;
+}
+
+@media print{
+
+    body{
+        margin:0;
+        background:white;
+    }
+
+    .toolbar{
+        display:none;
+    }
+
+    .sheet{
+        padding:0;
+    }
+
+    table{
+        width:100%;
+    }
+
+    th{
+        background:#d9d9d9 !important;
+        -webkit-print-color-adjust:exact;
+        print-color-adjust:exact;
+    }
+
+    .hari-row td{
+        background:#e6e6e6 !important;
+        -webkit-print-color-adjust:exact;
+        print-color-adjust:exact;
+    }
+
+}
+
+</style>
+
+</head>
+<body>
+
+<div class="toolbar">
+
+    <select id="kelas">
+        <option>7A</option>
+        <option>7B</option>
+        <option>7C</option>
+        <option>7D</option>
+        <option>7E</option>
+        <option>7F</option>
+        <option>7G</option>
+        <option>7H</option>
+        <option>7I</option>
+    </select>
+
+    <input type="date" id="tanggal">
+
+    <button onclick="buatRekap()">
+        Tampilkan Rekap
+    </button>
+
+    <button onclick="window.print()">
+        Cetak PDF
+    </button>
+
+</div>
+
+<div id="output">
+
+    <div class="sheet">
+
+        <h2>
+            REKAP JURNAL MENGAJAR MINGGUAN
+        </h2>
+
+        <div class="info">
+            <b>Kelas :</b> 7A
+            <br>
+            <b>Periode :</b>
+            06-07-2026 s.d. 11-07-2026
+        </div>
+
+        <table>
+
+            <tr>
+                <th>No</th>
+                <th>Tanggal</th>
+                <th>Jam</th>
+                <th>Guru</th>
+                <th>Mapel</th>
+                <th>Materi Ajar</th>
+                <th>Sakit</th>
+                <th>Izin</th>
+                <th>Alfa</th>
+            </tr>
+
+            <tr class="hari-row">
+                <td colspan="9">
+                    SENIN
+                </td>
+            </tr>
+
+            <tr>
+                <td class="center">1</td>
+                <td>06-07-2026</td>
+                <td>1-2</td>
+                <td>Dian Wiguna</td>
+                <td>Matematika</td>
+                <td class="col-materi">
+                    Bilangan berpangkat dan sifat-sifat bilangan berpangkat.
+                </td>
+                <td class="col-sakit">
+                    Ahmad
+                </td>
+                <td class="col-izin"></td>
+                <td class="col-alfa"></td>
+            </tr>
+
+            <tr>
+                <td class="center">2</td>
+                <td>06-07-2026</td>
+                <td>5-6</td>
+                <td>Dian Wiguna</td>
+                <td>Matematika</td>
+                <td class="col-materi">
+                    Menyelesaikan masalah kontekstual yang berkaitan dengan bentuk akar.
+                </td>
+                <td class="col-sakit"></td>
+                <td class="col-izin">
+                    Budi
+                </td>
+                <td class="col-alfa"></td>
+            </tr>
+
+            <tr class="hari-row">
+                <td colspan="9">
+                    SELASA
+                </td>
+            </tr>
+
+            <tr>
+                <td class="center">3</td>
+                <td>07-07-2026</td>
+                <td>3-4</td>
+                <td>Dian Wiguna</td>
+                <td>Matematika</td>
+                <td class="col-materi">
+                    Operasi bentuk akar.
+                </td>
+                <td class="col-sakit"></td>
+                <td class="col-izin"></td>
+                <td class="col-alfa">
+                    Candra
+                </td>
+            </tr>
+
+            <tr class="hari-row">
+                <td colspan="9">
+                    RABU
+                </td>
+            </tr>
+
+            <tr>
+                <td class="center">4</td>
+                <td>08-07-2026</td>
+                <td>1-2</td>
+                <td>Dian Wiguna</td>
+                <td>Matematika</td>
+                <td class="col-materi">
+                    Transformasi refleksi.
+                </td>
+                <td class="col-sakit"></td>
+                <td class="col-izin"></td>
+                <td class="col-alfa"></td>
+            </tr>
+
+        </table>
+
+        <table class="ttd">
+
+            <tr>
+                <td style="width:60%"></td>
+                <td style="text-align:center">
+                    Gentuma Raya, ...............
+                </td>
+            </tr>
+
+            <tr>
+                <td></td>
+                <td style="text-align:center">
+                    Guru Mata Pelajaran
+                </td>
+            </tr>
+
+            <tr>
+                <td style="height:80px"></td>
+                <td></td>
+            </tr>
+
+            <tr>
+                <td></td>
+                <td style="text-align:center">
+                    ______________________
+                </td>
+            </tr>
+
+        </table>
+
+    </div>
+
+</div>
+
+<script>
+
+const API =
+"https://script.google.com/macros/s/AKfycbz1ghySYmF_bP0GzkT1H2aMmPFNygG3uihm7lHC4c0DnLUhU_Zl-kln_Y70pPcklWYxLQ/exec";
+
+const NAMA_HARI = [
+    "Minggu",
+    "Senin",
+    "Selasa",
+    "Rabu",
+    "Kamis",
+    "Jumat",
+    "Sabtu"
+];
+
+window.onload = function(){
+
+    document.getElementById("tanggal").value =
+    new Date().toISOString().split("T")[0];
+
+};
+
+// =========================
+// FORMAT TANGGAL
+// =========================
+
+function formatTanggal(tanggal){
+
+    let d = new Date(tanggal);
+
+    let dd =
+    String(d.getDate())
+    .padStart(2,"0");
+
+    let mm =
+    String(d.getMonth()+1)
+    .padStart(2,"0");
+
+    let yyyy =
+    d.getFullYear();
+
+    return dd + "-" + mm + "-" + yyyy;
+
+}
+
+// =========================
+// NAMA HARI
+// =========================
+
+function namaHari(tanggal){
+
+    return NAMA_HARI[
+        new Date(tanggal).getDay()
+    ];
+
+}
+
+// =========================
+// SENIN - SABTU
+// =========================
+
+function getPeriodeMinggu(tanggal){
+
+    let d =
+    new Date(tanggal);
+
+    let hari =
+    d.getDay();
+
+    if(hari === 0){
+
+        hari = 7;
+
+    }
+
+    let senin =
+    new Date(d);
+
+    senin.setHours(0,0,0,0);
+
+    senin.setDate(
+        d.getDate() - hari + 1
+    );
+
+    let sabtu =
+    new Date(senin);
+
+    sabtu.setDate(
+        senin.getDate() + 5
+    );
+
+    sabtu.setHours(
+        23,59,59,999
+    );
+
+    return {
+        senin:senin,
+        sabtu:sabtu
+    };
+
+}
+
+// =========================
+// BUAT REKAP
+// =========================
+
+async function buatRekap(){
+
+    const kelas =
+    document.getElementById(
+        "kelas"
+    ).value;
+
+    const tanggal =
+    document.getElementById(
+        "tanggal"
+    ).value;
+
+    if(!tanggal){
+
+        alert(
+            "Pilih tanggal"
+        );
+
+        return;
+    }
+
+    try{
+
+        const response =
+        await fetch(
+            API +
+            "?rekap=" +
+            kelas
+        );
+
+        let data =
+        await response.json();
+
+        if(
+            !data ||
+            data.length <= 1
+        ){
+
+            alert(
+                "Tidak ada data jurnal"
+            );
+
+            return;
+
+        }
+
+        data.shift();
+
+        const periode =
+        getPeriodeMinggu(
+            tanggal
+        );
+
+        const awal =
+        periode.senin;
+
+        const akhir =
+        periode.sabtu;
+
+        let hasil =
+        data.filter(r=>{
+
+            let t =
+            new Date(r[1]);
+
+            return (
+                t >= awal &&
+                t <= akhir
+            );
+
+        });
+
+if(hasil.length === 0){
+
+    document.getElementById(
+        "output"
+    ).innerHTML = `
+        <div class="sheet">
+            <h2>
+                Tidak ada jurnal pada periode ini
+            </h2>
+        </div>
+    `;
+
+    return;
+}
+
+hasil.sort((a,b)=>{
+
+    let t1 = new Date(a[1]);
+    let t2 = new Date(b[1]);
+
+    if(t1.getTime() !== t2.getTime()){
+
+        return t1 - t2;
+
+    }
+
+    return parseInt(a[2]) - parseInt(b[2]);
+
+});
+
+        renderRekap(
+            hasil,
+            kelas,
+            awal,
+            akhir
+        );
+
+    }catch(err){
+
+        alert(
+            "Gagal mengambil data jurnal"
+        );
+
+    }
+
+}
+
+// =========================
+// RENDER
+// =========================
+
+function renderRekap(
+    data,
+    kelas,
+    awal,
+    akhir
+){
+
+    let html = `
+
+    <div class="sheet">
+
+        <h2>
+            REKAP JURNAL MENGAJAR MINGGUAN
+        </h2>
+
+        <div class="info">
+
+            <b>Kelas :</b>
+            ${kelas}
+            <br>
+
+            <b>Periode :</b>
+            ${formatTanggal(awal)}
+            s.d.
+            ${formatTanggal(akhir)}
+
+        </div>
+
+        <table>
+
+            <tr>
+
+                <th>No</th>
+                <th>Tanggal</th>
+                <th>Jam</th>
+                <th>Guru</th>
+                <th>Mapel</th>
+                <th>Materi Ajar</th>
+                <th>Sakit</th>
+                <th>Izin</th>
+                <th>Alfa</th>
+
+            </tr>
+
+    `;
+
+let hariSebelumnya = "";
+let nomorHari = 0;
+
+data.forEach((r)=>{
+
+    let hariSekarang =
+    namaHari(r[1]);
+
+    if(
+        hariSekarang !==
+        hariSebelumnya
+    ){
+
+        nomorHari = 0;
+
+        html += `
+        <tr class="hari-row">
+            <td colspan="9">
+                ${hariSekarang.toUpperCase()}
+            </td>
+        </tr>
+        `;
+    }
+
+
+        html += `
+        <tr>
+
+            <td class="center">
+    ${++nomorHari}
+</td>
+
+            <td>
+                ${r[1]}
+            </td>
+
+            <td>
+                ${r[2]}
+            </td>
+
+            <td>
+                ${r[5] || ""}
+            </td>
+
+            <td>
+                ${r[4] || ""}
+            </td>
+
+            <td class="col-materi">
+                ${r[6] || ""}
+            </td>
+
+            <td class="col-sakit">
+                ${r[7] || ""}
+            </td>
+
+            <td class="col-izin">
+                ${r[8] || ""}
+            </td>
+
+            <td class="col-alfa">
+                ${r[9] || ""}
+            </td>
+
+        </tr>
+        `;
+
+        hariSebelumnya =
+        hariSekarang;
+
+    });
+
+    html += `
+
+        </table>
+
+        <table class="ttd">
+
+            <tr>
+
+                <td style="width:60%">
+                </td>
+
+                <td style="text-align:center">
+
+                    Gentuma Raya,
+                    ${formatTanggal(
+                        new Date()
+                    )}
+
+                </td>
+
+            </tr>
+
+            <tr>
+
+                <td></td>
+
+                <td style="text-align:center">
+
+                    Guru Mata Pelajaran
+
+                </td>
+
+            </tr>
+
+            <tr>
+
+                <td style="height:80px"></td>
+
+                <td></td>
+
+            </tr>
+
+            <tr>
+
+                <td></td>
+
+                <td style="text-align:center">
+
+                    ______________________
+
+                </td>
+
+            </tr>
+
+        </table>
+
+    </div>
+
+    `;
+
+    document.getElementById(
+        "output"
+    ).innerHTML = html;
+
+}
+
+</script>
+    
+</body>
+    
+</html>
