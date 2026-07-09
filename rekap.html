@@ -328,6 +328,10 @@ th{
 
 </div>
 
+<button onclick="cetakPDF()">
+📄 Cetak PDF
+</button>
+    
 <script>
 
 const API =
@@ -827,6 +831,23 @@ function renderRekap(
     ).innerHTML = html;
 
 }
+
+
+
+function cetakPDF(){
+
+    if(window.Android){
+
+        Android.cetakPDF();
+
+    }else{
+
+        window.print();
+
+    }
+
+}
+
 
 </script>
     
