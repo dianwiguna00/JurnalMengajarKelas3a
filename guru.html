@@ -85,7 +85,9 @@ th{
 <div id="output">
 Loading...
 </div>
-
+<button onclick="cetakPDF()">
+📄 Cetak PDF
+</button>
 <script>
 
 const API =
@@ -578,6 +580,23 @@ function renderGuru(
 }
 
 loadData();
+
+
+
+function cetakPDF(){
+
+    if(window.Android){
+
+        Android.cetakPDF();
+
+    }else{
+
+        window.print();
+
+    }
+
+}
+
 
 </script>
 
