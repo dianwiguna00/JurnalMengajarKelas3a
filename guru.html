@@ -76,18 +76,34 @@ th{
 
 }
 
+.no-print{
+    margin-bottom:15px;
+}
+
+@media print{
+
+    .no-print{
+        display:none !important;
+    }
+
+}
+    
 </style>
 
 </head>
 
 <body>
+<div class="toolbar-print no-print">
 
+    <button onclick="cetakPDF()">
+        📄 Cetak PDF
+    </button>
+
+</div>
 <div id="output">
 Loading...
 </div>
-<button onclick="cetakPDF()">
-📄 Cetak PDF
-</button>
+
 <script>
 
 const API =
