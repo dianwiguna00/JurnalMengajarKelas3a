@@ -152,11 +152,32 @@ th{
 
 }
 
+    .no-print{
+    margin-bottom:15px;
+}
+
+@media print{
+
+    .no-print{
+        display:none !important;
+    }
+
+}
+    
 </style>
 
 </head>
 <body>
+<div class="toolbar-print no-print">
 
+    <button onclick="cetakPDF()">
+        📄 Cetak PDF
+    </button>
+
+</div>
+
+<div id="output">
+</div>
 <div class="toolbar">
 
     <select id="kelas">
@@ -176,10 +197,6 @@ th{
     <button onclick="buatRekap()">
         Tampilkan Rekap
     </button>
-
-<button onclick="cetakPDF()">
-📄 Cetak PDF
-</button>
     
 </div>
 
