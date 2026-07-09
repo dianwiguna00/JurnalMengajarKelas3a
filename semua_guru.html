@@ -93,6 +93,8 @@ th{
     font-size:12px;
 }
 
+/* Cetak */
+
 @page{
     size:A4 portrait;
     margin:10mm;
@@ -102,21 +104,28 @@ th{
 
     body{
         margin:0;
+        background:white;
     }
 
-    .guru-title{
+    .toolbar{
+        display:none;
+    }
+
+    .sheet{
+        padding:0;
+    }
+
+    table{
+        width:100%;
+    }
+
+    th{
         background:#d9d9d9 !important;
         -webkit-print-color-adjust:exact;
         print-color-adjust:exact;
     }
 
     .hari-row td{
-        background:#f2f2f2 !important;
-        -webkit-print-color-adjust:exact;
-        print-color-adjust:exact;
-    }
-
-    th{
         background:#e6e6e6 !important;
         -webkit-print-color-adjust:exact;
         print-color-adjust:exact;
